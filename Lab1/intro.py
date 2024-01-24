@@ -34,6 +34,6 @@ while True:
         if play_again == "N":
             break
     else:
-        cprint("That game doesn't exists yet...","red")
+        cprint("That game doesn't exist yet...","red")
 
 cprint("Thank you for playing.", "light_blue")
