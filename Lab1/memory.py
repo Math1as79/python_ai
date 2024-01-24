@@ -21,7 +21,7 @@ elif level == "Impossible":
 
 print(f"Remember: {memory_string}, you have {guesses_and_time} seconds..", end="")
 print("\r", end="")
-time.sleep(5)
+time.sleep(guesses_and_time)
 
 print(f"The rearranged string: {''.join(random.sample(memory_string,len(memory_string)))}, you have {guesses_and_time} seconds")
 
