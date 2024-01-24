@@ -21,11 +21,11 @@ for w in word:
     guessed_word.append("x")
 
 #setting the max guesses to choosen word multiplied by two
-max_guesses = len(words) * 2
+max_guesses = len(word) * 2
 
 print ("Let's play hangman.")
 
-print(f"Word contains {str(len(word))} characters. You have {max_guesses} before you lose. ")
+print(f"Word contains {str(len(word))} characters. You have {max_guesses} guesses before you lose. ")
 
 #looping guesses and deduct one on every wrong guess
 while max_guesses >= 0:
@@ -41,10 +41,13 @@ while max_guesses >= 0:
             print("You found one or more characters in the word: " + ''.join(guessed_word))
         else: 
             max_guesses -= 1
+            if max_guesses == 0:
+                print("Sorry the man will hang.")
+                break
             print(f"You have {max_guesses} guesses left. Try again.")
         
         if ''.join(guessed_word) == word:
             print(f"You have won. Correct word {word}")
             break 
         
-
+print("Game finished")

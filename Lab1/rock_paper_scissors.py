@@ -8,7 +8,7 @@ human_handsign = input("Choose a handsign:")
 
 computer_handsign = handsigns[randint(0,len(handsigns)-1)]
 
-print(f"Your handsign {human_handsign}, computer handsign {computer_handsign}")
+print(f"Your handsign is {human_handsign}, computer handsign is {computer_handsign}")
 
 if human_handsign == computer_handsign:
     print("It's a tie.")
