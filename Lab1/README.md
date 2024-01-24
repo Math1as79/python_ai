@@ -8,7 +8,7 @@ Execute the intro.py in a command prompt. Or run the separate files in a python 
 
 ## Roadmap 
 
-Look out for new existing games coming your way in the near future.
+Look out for new exciting games coming your way in the near future.
 
 ## Authors and acknowledgment
 
