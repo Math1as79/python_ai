@@ -1,0 +1,49 @@
+{% include "base.html" %}
+
+{% block navbar %}{%endblock%}
+
+{% block content %}
+    - Available tickers
+    - Magic seven (recommended)
+    <div class="container-sm">
+        <table id="data" class="table">
+            <thead>
+                <tr>
+                    {% for col in column_names %}
+                    <th>{{col}}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody class="table_group-divider">
+                {% for row in row_data %}
+                <tr>
+                    {%for col, row_ in zip(column_names, row) %}
+                    <td>{{row_}}</td>
+                    {%endfor%}
+                </tr>
+                {%endfor%}
+            </tbody>
+        </table>
+
+    </div>
+
+    Show list of tickers maybe in data table <br>
+    Click one ticker <br>
+    Webscrape data - plot and save it 
+    Display image
+    Run manual breakout test
+    Run machine learning on data to get a trained model on that specifick ticker
+    Run ml to see how much the price will increase 
+    if sentiment available display sentiment before breakout 
+
+
+
+{% endblock %}
+
+{% block scripts %}
+  <script>
+    $(document).ready(function () {
+      $('#data').DataTable();
+    });
+  </script>
+{% endblock %}

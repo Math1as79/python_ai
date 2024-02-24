@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Stock analyzer</title>
+        <script src="{{url_for('static', filename = 'bootstrap.min.js')}}"></script>
+        <link rel="stylesheet" href="{{ url_for('static', filename = 'bootstrap.css')}}">
+        <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css')}}">
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/dataTables.bootstrap5.css">
+    </head>
+    <body>
+        {% block navbar %}
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="{{ url_for('index')}}"><img src="{{ url_for('static', filename='images/breakout.png')}}" width="50px" height="40px" alt="breakout"></a>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item active">
+                  <a class="nav-link" href="{{ url_for('index')}}">Index <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('engine')}}">Engine</a>
+                </li>
+              </ul>
+            </div>
+          </nav>
+
+        
+        {% endblock %}
+
+        <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
+        <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap5.js"></script>
+        {% block scripts %}{% endblock %}
+    </body>
+</html>
