@@ -1,28 +1,35 @@
 from flask import Flask, render_template, request
 import pandas as pd
-"""from webscraper import scrape_stock_prices
-from breakout import run_breakout """
+from webscraper import scrape_stock_prices
+from breakout import run_breakout 
 
 app = Flask(__name__)
 
-#if __name__ == '__main__':
-app.run(debug=True) 
-
-""" def read_tickers():
-    return pd.read_csv('./data/tickers.csv')
-
-df_tickers = read_tickers()
-
-print(df_tickers.loc[df_tickers['ticker'].isin(['TSLA','MSFT','AAPL'])])
-ticker = input("Choose ticker to analyze:") """
+if __name__ == '__main__':
+    app.run(debug=True) 
 
 @app.route("/")
 def index():
     df_tickers = pd.read_csv('./data/tickers.csv')
+    df_tickers = df_tickers[df_tickers['Ticker'].isin(['TSLA','MSFT','AAPL','META','NVDA','NFLX','AMZN'])]
+    df_tickers = df_tickers.assign(Sentiment=False)
+    df_tickers.loc[df_tickers['Ticker'] == 'TSLA', 'Sentiment'] = True
+    df_tickers = df_tickers.assign(Analyze=False)
     return render_template('index.html', column_names=df_tickers.columns.values, row_data=list(df_tickers.values.tolist()), zip=zip)
+
+#@app.route("/tickers")
+
+@app.route("/anayze", methods=['POST'])
+def analyze():
+    if request.method == 'POST':
+        ticker = request.form['tickers']
+        #Maybe generate a dictionary with different statuses
+        scrape_result = scrape_stock_prices(ticker)
+        run_breakout(ticker)
 
 @app.route("/engine")
 def engine():
+    
     return render_template('engine.html')
 
 

@@ -3,32 +3,38 @@
 {% block navbar %}{%endblock%}
 
 {% block content %}
-    - Available tickers
-    - Magic seven (recommended)
+    - Showing a subset of tickers to be able to display TESLAs with sentiment data.
+    <p></p>
     <div class="container-sm">
-        <table id="data" class="table">
-            <thead>
-                <tr>
-                    {% for col in column_names %}
-                    <th>{{col}}</th>
-                    {% endfor %}
-                </tr>
-            </thead>
-            <tbody class="table_group-divider">
-                {% for row in row_data %}
-                <tr>
-                    {%for col, row_ in zip(column_names, row) %}
-                    <td>{{row_}}</td>
+        <form action = "{{url_for('analyze')}}" method="POST">
+            <table id="data" class="table">
+                <thead>
+                    <tr>
+                        {% set ns = namespace(Ticker='') %}
+                        {% for col in column_names %}
+                        <th>{{col}}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody class="table_group-divider">
+                    {% for row in row_data %}
+                    <tr>
+                        {%for col, row_ in zip(column_names, row) %}
+                            {% if col == "Analyze" %}
+                                <td><input type="radio" name="tickers" id="{{ns.Ticker}}" value="{{row[0]}}"></input></td>
+                            {%else%}
+                                <td>{{row_}}</td>
+                            {%endif%}
+                        {%endfor%}
+                    </tr>
                     {%endfor%}
-                </tr>
-                {%endfor%}
-            </tbody>
-        </table>
-
+                </tbody>
+            </table>
+            <button type="submit" class="btn btn-outline-primary">Analyze ticker</button>
+        </form>
     </div>
 
-    Show list of tickers maybe in data table <br>
-    Click one ticker <br>
+    
     Webscrape data - plot and save it 
     Display image
     Run manual breakout test
