@@ -21,28 +21,27 @@ def index():
 
 #@app.route("/tickers")
 
-@app.route("/analyze/<gear>", methods=['POST'])
-def analyze(gear=1):
-    if gear < 3:
-        if request.method == 'POST':
-            g._ticker = request.form['tickers']
+@app.route("/analyze", methods=['POST'])
+def analyze():
+    if request.method == 'POST':
+        ticker = request.form['tickers']
             
-            #Maybe generate a dictionary with different statuses
-            #scrape_result = scrape_stock_prices(ticker)
-            #plot_graph(scrape_result['Data'], ticker)
-        
-            
-            
-    if gear == 2:
-        breakouts = run_breakout(g._ticker)
+        #Maybe generate a dictionary with different statuses
+        scrape_result = scrape_stock_prices(ticker)
+        #plot_graph(scrape_result['Data'], ticker)
+        #, company_info=scrape_result['Info']
+        return render_template('engine.html', graph=f'images/{ticker}.png', ticker=ticker)
+    else:
+        return render_template('engine.html')
 
-    return render_template('engine.html', graph=f'images/{g._ticker}.png', company_info=scrape_result['Info'])
+@app.route("/breakout/<ticker>")
+def breakout(ticker):
+    run_breakout(ticker) 
+    return render_template('engine.html', graph=f'images/{ticker}.png', ticker=ticker)
 
 @app.route("/engine")
 def engine():
-    
     return render_template('engine.html')
-
 
 """ if ticker in ['TSLA','MSFT','AAPL','META']:
     print(f'Webscarping via Yahoo finance started for {ticker}')
