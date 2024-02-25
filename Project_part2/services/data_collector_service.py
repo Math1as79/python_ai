@@ -11,6 +11,7 @@ def scrape_stock_prices(ticker, range="1y"):
         path = f'./data/prices/{current_date.strftime("%Y%m%d")}_{ticker}.csv'
         if os.path.isfile(path) == True:
             df_prices = pd.read_csv(path)
+            info = pd.read_csv(f'./data/ticker_info/{ticker}.csv').to_dict()
         else:
             tickers = yf.Tickers(ticker)
             if ticker == 'TSLA':
@@ -18,11 +19,12 @@ def scrape_stock_prices(ticker, range="1y"):
             else:
                 df_prices = tickers.tickers[ticker].history(period=range)
                 
-            info = tickers.tickers[ticker].info
-            #info.(f'./data/ticker_info/{ticker}.csv')  date_format='%Y-%m-%d'
             df_prices.to_csv(path)
-        #, 'Info': df_info
-        return {'Status': True, 'Message': 'Prices collected', 'Data': df_prices}
+            info = tickers.tickers[ticker].info
+            df_info = pd.DataFrame(info)
+            df_info.to_csv(f'./data/ticker_info/{ticker}.csv') 
+        
+        return {'Status': True, 'Message': 'Prices collected', 'Data': df_prices, 'Info': info['longBusinessSummary']}
     except Exception as e:
         return {'Status': False, 'Message':'Prices could not be collected due to: ' + str(e)}
 

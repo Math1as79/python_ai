@@ -30,14 +30,19 @@ def analyze():
         scrape_result = scrape_stock_prices(ticker)
         #plot_graph(scrape_result['Data'], ticker)
         #, company_info=scrape_result['Info']
-        return render_template('engine.html', graph=f'images/{ticker}.png', ticker=ticker)
+        return render_template('engine.html', graph=f'images/{ticker}.png', ticker=ticker, company_info=scrape_result['Info'])
     else:
         return render_template('engine.html')
 
 @app.route("/breakout/<ticker>")
 def breakout(ticker):
-    run_breakout(ticker) 
-    return render_template('engine.html', graph=f'images/{ticker}.png', ticker=ticker)
+    breakout_data = run_breakout(ticker) 
+    return render_template('engine.html', graph=f'images/{ticker}.png', ticker=ticker, accuracy=breakout_data['Accuracy'], breakouts=breakout_data['Data'])
+
+@app.route("/sentiment/<ticker>")
+def sentiment(ticker):
+    return render_template('engine.html')
+
 
 @app.route("/engine")
 def engine():

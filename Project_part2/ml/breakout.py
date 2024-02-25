@@ -41,6 +41,6 @@ def run_breakout(ticker):
 
     accuracy = accuracy_score(y_test, predictions)
     
-    return accuracy * 100
+    return {'Accuracy':accuracy * 100,'Data':df_breakout }
 
 #run_breakout('TSLA')
