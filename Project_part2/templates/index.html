@@ -10,7 +10,6 @@
             <table id="data" class="table">
                 <thead>
                     <tr>
-                        {% set ns = namespace(Ticker='') %}
                         {% for col in column_names %}
                         <th>{{col}}</th>
                         {% endfor %}
@@ -21,7 +20,7 @@
                     <tr>
                         {%for col, row_ in zip(column_names, row) %}
                             {% if col == "Analyze" %}
-                                <td><input type="radio" name="tickers" id="{{ns.Ticker}}" value="{{row[0]}}"></input></td>
+                                <td><input type="radio" name="tickers" id="{{row[0]}}" value="{{row[0]}}"></input></td>
                             {%else%}
                                 <td>{{row_}}</td>
                             {%endif%}
