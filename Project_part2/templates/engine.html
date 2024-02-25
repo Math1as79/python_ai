@@ -14,7 +14,8 @@
       <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
         <div class="accordion-body">
             <img src="{{ url_for('static', filename=graph)}}" width="600px" height="400px" alt="breakout">
-            
+            Card with company info
+            <a class="btn btn-danger" type="button" href="{{url_for('breakout',ticker=ticker)}}">Run breakout</a> 
         </div>
       </div>
     </div>
