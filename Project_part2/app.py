@@ -1,7 +1,9 @@
 from flask import Flask, render_template, request
 import pandas as pd
-from webscraper import scrape_stock_prices
-from breakout import run_breakout 
+from services.data_collector_service import scrape_stock_prices
+from ml.breakout import run_breakout 
+from services.plot_service import plot_graph
+from flask import g
 
 app = Flask(__name__)
 
@@ -19,13 +21,22 @@ def index():
 
 #@app.route("/tickers")
 
-@app.route("/anayze", methods=['POST'])
-def analyze():
-    if request.method == 'POST':
-        ticker = request.form['tickers']
-        #Maybe generate a dictionary with different statuses
-        scrape_result = scrape_stock_prices(ticker)
-        run_breakout(ticker)
+@app.route("/analyze/<gear>", methods=['POST'])
+def analyze(gear=1):
+    if gear < 3:
+        if request.method == 'POST':
+            g._ticker = request.form['tickers']
+            
+            #Maybe generate a dictionary with different statuses
+            #scrape_result = scrape_stock_prices(ticker)
+            #plot_graph(scrape_result['Data'], ticker)
+        
+            
+            
+    if gear == 2:
+        breakouts = run_breakout(g._ticker)
+
+    return render_template('engine.html', graph=f'images/{g._ticker}.png', company_info=scrape_result['Info'])
 
 @app.route("/engine")
 def engine():
