@@ -35,10 +35,10 @@ def run_sentiment_analysis(ticker, df_breakout):
     else:
         sentiment.append({'Date': '','Status':f'No sentiment to analyze on {ticker} ', 'Postive':0,'Negative':0, 'Number of tweets':0})
 
-    df = pd.DataFrame(sentiment)
-    df.to_csv(f'./data/sentiment/{ticker}_sa.csv')
+    df_sentiment = pd.DataFrame(sentiment)
+    df_sentiment.to_csv(f'./data/sentiment/{ticker}_sa.csv')
 
-    return sentiment
+    return df_sentiment
 
 def get_sentiment(ticker):
     df = pd.read_csv(f'./data/sentiment/{ticker}_sa.csv') 

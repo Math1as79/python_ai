@@ -2,6 +2,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import accuracy_score
+import joblib
 
 def __generate_breakout_feauters(df_prices, volume=False):
     # quite generous breakout conditions
@@ -41,6 +42,10 @@ def run_breakout(ticker):
 
     accuracy = accuracy_score(y_test, predictions)
     
+    if accuracy > 0.5:
+        #Saving the model
+        joblib.dump(clf, f'./models/{ticker}_breakout.joblib')
+
     return {'Accuracy':accuracy * 100,'Data':df_breakout }
 
 def get_breakout_data(ticker):
