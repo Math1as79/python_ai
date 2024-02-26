@@ -1,7 +1,8 @@
 from flask import Flask, render_template, request
 import pandas as pd
-from services.data_collector_service import scrape_stock_prices
-from ml.breakout import run_breakout 
+from services.data_collector_service import scrape_stock_prices, get_company_info
+from ml.breakout import run_breakout, get_breakout_data
+from ml.sentiment_analyser import run_sentiment_analysis, get_sentiment
 from services.plot_service import plot_graph
 from flask import g
 
@@ -28,20 +29,35 @@ def analyze():
             
         #Maybe generate a dictionary with different statuses
         scrape_result = scrape_stock_prices(ticker)
-        #plot_graph(scrape_result['Data'], ticker)
-        #, company_info=scrape_result['Info']
+        plot_graph(scrape_result['Data'], ticker)
         return render_template('engine.html', graph=f'images/{ticker}.png', ticker=ticker, company_info=scrape_result['Info'])
     else:
         return render_template('engine.html')
 
 @app.route("/breakout/<ticker>")
 def breakout(ticker):
-    breakout_data = run_breakout(ticker) 
-    return render_template('engine.html', graph=f'images/{ticker}.png', ticker=ticker, accuracy=breakout_data['Accuracy'], breakouts=breakout_data['Data'])
+    breakout_data = run_breakout(ticker)
+    df_data = breakout_data['Data']
+    df_breakout = df_data[['Date','Open','Close','Volume','Price_vs_SMA50','Price_vs_SMA200']].copy()
+    info = get_company_info(ticker)
+    return render_template('engine.html', graph=f'images/{ticker}.png', ticker=ticker, company_info=info, accuracy=breakout_data['Accuracy'], 
+                           column_names=df_breakout.columns.values, row_data=list(df_breakout.values.tolist()), zip=zip)
 
 @app.route("/sentiment/<ticker>")
 def sentiment(ticker):
-    return render_template('engine.html')
+    info = get_company_info(ticker)
+    df_breakout = get_breakout_data(ticker)
+    sentiment = run_sentiment_analysis(ticker, df_breakout)
+    return render_template('engine.html', graph=f'images/{ticker}.png', ticker=ticker, company_info=info,
+                           column_names=df_breakout.columns.values, row_data=list(df_breakout.values.tolist()), zip=zip, sentiment=sentiment)
+
+@app.route("/price/<ticker>")
+def price_prediction(ticker):
+    info = get_company_info(ticker)
+    df_breakout = get_breakout_data(ticker)
+    sentiment = get_sentiment(ticker)
+    return render_template('engine.html', graph=f'images/{ticker}.png', ticker=ticker, company_info=info,
+                           column_names=df_breakout.columns.values, row_data=list(df_breakout.values.tolist()), zip=zip, sentiment=sentiment)
 
 
 @app.route("/engine")

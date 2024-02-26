@@ -16,7 +16,7 @@
           <div class="container text-center">
             <div class="row">
               <div class="col">
-                <img src="{{ url_for('static', filename=graph)}}" width="600px" height="400px" alt="breakout">
+                <img src="{{ url_for('static', filename=graph)}}" width="600px" height="500px" alt="breakout">
               </div>
               <div class="col">
                 <div class="card">
@@ -36,10 +36,6 @@
               </div>
             </div>
           </div>  
-          
-          
-            
-            
         </div>
       </div>
     </div>
@@ -51,7 +47,27 @@
       </h2>
       <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
         <div class="accordion-body">
-          
+          <div class="container-sm">
+              <table id="data" class="table">
+                    <thead>
+                        <tr>
+                            {% for col in column_names %}
+                            <th>{{col}}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody class="table_group-divider">
+                        {% for row in row_data %}
+                        <tr>
+                            {%for col, row_ in zip(column_names, row) %}
+                                <td>{{row_}}</td>
+                            {%endfor%}
+                        </tr>
+                        {%endfor%}
+                    </tbody>
+                </table>
+            
+          <a class="btn btn-dark" type="button" href="{{url_for('sentiment',ticker=ticker)}}">Run sentiment analysis</a> 
         </div>
       </div>
     </div>
@@ -63,6 +79,18 @@
       </h2>
       <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
         <div class="accordion-body">
+          <table id="data" class="table">
+            <tbody class="table_group-divider">
+                {% for s in sentiment %}
+                <tr>
+                    
+                        <td>{{s}}</td>
+                    
+                </tr>
+                {%endfor%}
+            </tbody>
+        </table>
+
           <a class="btn btn-dark" type="button" href="{{url_for('breakout',ticker=ticker)}}">Run Price prediction</a> 
         </div>
       </div>
@@ -75,7 +103,7 @@
         </h2>
         <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
           <div class="accordion-body">
-            <strong>This is the third item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+            
           </div>
         </div>
       </div>

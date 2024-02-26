@@ -3,7 +3,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import accuracy_score
 
-def generate_breakout_feauters(df_prices, volume=False):
+def __generate_breakout_feauters(df_prices, volume=False):
     # quite generous breakout conditions
     df_prices['SMA50'] = df_prices['Close'].rolling(window=50).mean()
     df_prices['SMA200'] = df_prices['Close'].rolling(window=200).mean()
@@ -23,7 +23,7 @@ def generate_breakout_feauters(df_prices, volume=False):
 def run_breakout(ticker):
     #Read in prices from ticker dataframe
     df_prices = pd.read_csv(f'./data/prices/{ticker}.csv')
-    df_breakout = generate_breakout_feauters(df_prices, True)
+    df_breakout = __generate_breakout_feauters(df_prices, True)
 
     df_breakout.to_csv(f'./data/breakout/{ticker}.csv')
     
@@ -42,5 +42,10 @@ def run_breakout(ticker):
     accuracy = accuracy_score(y_test, predictions)
     
     return {'Accuracy':accuracy * 100,'Data':df_breakout }
+
+def get_breakout_data(ticker):
+    df_data = pd.read_csv(f'./data/breakout/{ticker}.csv')
+    df_breakout = df_data[['Date','Open','Close','Volume','Price_vs_SMA50','Price_vs_SMA200']].copy()
+    return df_breakout 
 
 #run_breakout('TSLA')
