@@ -7,7 +7,6 @@ import pandas as pd
 def scrape_stock_prices(ticker, range="1y"):
     try:
         # Control if file already exist
-        #{current_date.strftime("%Y%m%d")}_
         current_date = date.today()
         path = f'./data/prices/{ticker}.csv'
         if os.path.isfile(path) == True:

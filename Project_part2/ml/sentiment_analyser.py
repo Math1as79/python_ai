@@ -2,9 +2,31 @@ from transformers import pipeline
 import pandas as pd
 import matplotlib.pyplot as plt
 import os 
+import re
+from nltk.corpus import stopwords
 
 # Use a pipeline fitted for sentiment analysis 
 sentiment_classifier = pipeline("sentiment-analysis")
+
+def __clean_tweet(text):
+    # Lowercasing
+    text = text.lower()
+    
+    # Remove URLs
+    text = re.sub(r'http\S+', '', text)
+    
+    # Remove mentions and hashtags
+    text = re.sub(r'@[\w]+', '', text)
+    text = re.sub(r'#', '', text)
+    
+    # Remove special characters, numbers, and punctuation
+    text = re.sub(r'[^a-z\s]', '', text)
+    
+    # Remove stopwords
+    stop_words = set(stopwords.words('english'))
+    text = ' '.join([word for word in text.split() if word not in stop_words])
+    
+    return text
 
 def __return_sentiment(tweet):
     # return label from output label
@@ -26,7 +48,7 @@ def run_sentiment_analysis(ticker, df_breakout):
                 df_tweets = df_tweets.loc[tweets_in_scope]
                 
                 if df_tweets.empty == False:
-                    #df_tweets['Tweet'] = df_tweets['Tweet'].apply(__clean_tweet)
+                    df_tweets['Tweet'] = df_tweets['Tweet'].apply(__clean_tweet)
                     df_tweets['sentiment'] = df_tweets['Tweet'].apply(__return_sentiment)
                     positive = df_tweets['sentiment'].value_counts()['POSITIVE']
                     negative = df_tweets['sentiment'].value_counts()['NEGATIVE']
