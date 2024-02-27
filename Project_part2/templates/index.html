@@ -6,7 +6,7 @@
     <p></p>
     <div class="container-sm">
         <form action = "{{url_for('analyze')}}" method="POST">
-            <table id="data" class="table">
+            <table  class="table">
                 <thead>
                     <tr>
                         {% for col in column_names %}
@@ -28,16 +28,11 @@
                     {%endfor%}
                 </tbody>
             </table>
-            <button type="submit" class="btn btn-outline-primary">Analyze ticker</button>
+            <button type="submit" class="btn btn-dark">Analyze ticker</button>
         </form>
     </div>
 
     
-    Run machine learning on data to get a trained model on that specifick ticker
-    Run ml to see how much the price will increase 
-    if sentiment available display sentiment before breakout 
-
-
 
 {% endblock %}
 
