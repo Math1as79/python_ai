@@ -3,7 +3,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os 
 import re
-from nltk.corpus import stopwords
 
 # Use a pipeline fitted for sentiment analysis 
 sentiment_classifier = pipeline("sentiment-analysis")
@@ -21,10 +20,6 @@ def __clean_tweet(text):
     
     # Remove special characters, numbers, and punctuation
     text = re.sub(r'[^a-z\s]', '', text)
-    
-    # Remove stopwords
-    stop_words = set(stopwords.words('english'))
-    text = ' '.join([word for word in text.split() if word not in stop_words])
     
     return text
 

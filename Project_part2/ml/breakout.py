@@ -14,32 +14,45 @@ def train_model(features, labels):
     return model, accuracy
 
 #https://python.plainenglish.io/coding-stock-breakouts-in-python-a-step-by-step-guide-592211e36774
-def __generate_breakout_feauters(df_prices, volume=False):
-    df_prices['Short_MA'] = df_prices['Close'].ewm(span=12, adjust=False).mean()
+def __generate_breakout_feauters(df_prices):
+    df_prices['Open_Close'] = df_prices['Close'] - df_prices['Open']
+    df_prices['MA20'] = df_prices['Open_Close'].rolling(20).mean()
+    df_prices['OC-%-MA20'] = 100*(df_prices['Open_Close'] - df_prices['MA20']) /df_prices['MA20']
+    df_prices['MaxOC_Prev10'] = df_prices['Open_Close'].rolling(10).max()
+
+    # Volume
+    df_prices['MA20_Volume'] = df_prices['Volume'].rolling(20).mean()
+
+    # Calculate the % change of the current volume relative to the moving average
+    df_prices['Volume-%-MA20_Volume'] = 100*(df_prices['Volume'] - df_prices['MA20_Volume'])/df_prices['MA20_Volume']
+
+    """ df_prices['Short_MA'] = df_prices['Close'].ewm(span=12, adjust=False).mean()
     df_prices['Long_MA'] = df_prices['Close'].ewm(span=26, adjust=False).mean()
     df_prices['MACD'] = df_prices['Short_MA'] - df_prices['Long_MA']
     df_prices['Signal_Line'] = df_prices['MACD'].ewm(span=9, adjust=False).mean()
     
     df_prices['Volume_MA'] = df_prices['Volume'].ewm(span=12, adjust=False).mean()
-    df_prices['Volume_Ratio'] = df_prices['Volume'] / df_prices['Volume_MA']
+    df_prices['Volume_Ratio'] = df_prices['Volume'] / df_prices['Volume_MA'] """
     
+    # Remove null values 
     return df_prices.dropna()
 
-def __generate_breakout_labels(df_breakout, threshold=0):
-    df_breakout['Breakout'] = (df_breakout['MACD'] > threshold) & (df_breakout['Signal_Line'] > threshold) 
+def __generate_breakout_labels(df_breakout, oc_vs_ma = 100, volume_vs_ma = 50):
+    df_breakout['Breakout'] = (df_breakout['Open_Close'] >= 0.0) & (df_breakout['Open_Close'] == df_breakout['MaxOC_Prev10']) & (df_breakout['OC-%-MA20'] >= 100.0) & (df_breakout['Volume-%-MA20_Volume'] >= 50.0) 
+    #df_breakout['Breakout'] = (df_breakout['MACD'] > threshold) & (df_breakout['Signal_Line'] > threshold) 
     return df_breakout
 
 def run_breakout(ticker):
     #Read in prices from ticker dataframe
     df_prices = pd.read_csv(f'./data/prices/{ticker}.csv')
     # Drop some columns that are not needed
-    df_prices =df_prices.drop(['High'],['Low'])
-    df_breakout = __generate_breakout_feauters(df_prices, True)
+    df_prices =df_prices.drop(columns =['High','Low','Dividends','Stock Splits'])
+    df_breakout = __generate_breakout_feauters(df_prices)
     # Need to tweak threshold/model and analyse it more to be able to hit breakpoints that I deem to be interesting
-    df_breakout = __generate_breakout_labels(df_breakout, 10)
+    df_breakout = __generate_breakout_labels(df_breakout)
     
     # Split the dataset into what we want to train and what we want to predict
-    features = df_breakout[['Short_MA', 'Long_MA', 'MACD', 'Signal_Line', 'Volume_Ratio']]
+    features = df_breakout[['Open_Close', 'MA20', 'OC-%-MA20', 'MaxOC_Prev10', 'MA20_Volume','Volume-%-MA20_Volume']]
     labels = df_breakout['Breakout']
 
     # Only save entries where breakout = true
@@ -57,7 +70,7 @@ def run_breakout(ticker):
 
 def get_breakout_data(ticker):
     df_data = pd.read_csv(f'./data/breakout/{ticker}.csv')
-    df_breakout = df_data[['Date','Open','Close','Volume','MACD','Signal_Line']].copy()
+    df_breakout = df_data[['Date','Open','Close','Volume']].copy()
     return df_breakout 
 
 #run_breakout('TSLA')

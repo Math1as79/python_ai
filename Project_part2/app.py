@@ -40,7 +40,7 @@ def analyze():
 def breakout(ticker):
     breakout_data = run_breakout(ticker)
     df_data = breakout_data['Data']
-    df_breakout = df_data[['Date','Open','Close','Volume','MACD','Signal_Line']].copy()
+    df_breakout = df_data[['Date','Open','Close','Volume','Breakout']].copy()
     info = get_company_info(ticker)
     return render_template('engine.html', graph=f'images/{ticker}.png', ticker=ticker, company_info=info, accuracy=breakout_data['Accuracy'], 
                            column_names=df_breakout.columns.values, row_data=list(df_breakout.values.tolist()), zip=zip)

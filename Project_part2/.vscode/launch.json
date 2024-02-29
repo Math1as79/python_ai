@@ -5,10 +5,20 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "type": "chrome",
+            "name": "Python Debugger: Flask",
+            "type": "debugpy",
             "request": "launch",
-            "name": "Open engine.html",
-            "file": "c:\\Repository\\python_ai\\Project_part2\\templates\\engine.html"
+            "module": "flask",
+            "env": {
+                "FLASK_APP": "app.py",
+                "FLASK_DEBUG": "1"
+            },
+            "args": [
+                "run",
+                "--no-debugger",
+                "--no-reload"
+            ],
+            "jinja": true
         }
     ]
 }
