@@ -56,7 +56,7 @@ def run_breakout(ticker):
     labels = df_breakout['Breakout']
 
     # Only save entries where breakout = true
-    df_breakout = df_breakout[df_breakout['Breakout'] == True]
+    #df_breakout = df_breakout[df_breakout['Breakout'] == True]
     df_breakout.to_csv(f'./data/breakout/{ticker}.csv')
 
     trained_model, accuracy = train_model(features, labels)
@@ -69,8 +69,7 @@ def run_breakout(ticker):
     return {'Accuracy':accuracy * 100,'Data':df_breakout }
 
 def get_breakout_data(ticker):
-    df_data = pd.read_csv(f'./data/breakout/{ticker}.csv')
-    df_breakout = df_data[['Date','Open','Close','Volume']].copy()
+    df_breakout = pd.read_csv(f'./data/breakout/{ticker}.csv')
     return df_breakout 
 
 #run_breakout('TSLA')

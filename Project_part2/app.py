@@ -3,6 +3,7 @@ import pandas as pd
 from services.data_collector_service import scrape_stock_prices, get_company_info
 from ml.breakout import run_breakout, get_breakout_data
 from ml.sentiment_analyser import run_sentiment_analysis, get_sentiment
+from ml.price_prediction import run_price_prediction
 from services.plot_service import plot_graph
 
 # Because of time limitation I decided not to comment so much on the flask part.
@@ -39,8 +40,9 @@ def analyze():
 @app.route("/breakout/<ticker>")
 def breakout(ticker):
     breakout_data = run_breakout(ticker)
-    df_data = breakout_data['Data']
-    df_breakout = df_data[['Date','Open','Close','Volume','Breakout']].copy()
+    df_breakout = breakout_data['Data']
+    df_breakout = df_breakout[df_breakout['Breakout'] == True]
+    df_breakout = df_breakout[['Date','Open','Close','Volume','Breakout']].copy()
     info = get_company_info(ticker)
     return render_template('engine.html', graph=f'images/{ticker}.png', ticker=ticker, company_info=info, accuracy=breakout_data['Accuracy'], 
                            column_names=df_breakout.columns.values, row_data=list(df_breakout.values.tolist()), zip=zip)
@@ -49,15 +51,19 @@ def breakout(ticker):
 def sentiment(ticker):
     info = get_company_info(ticker)
     df_breakout = get_breakout_data(ticker)
+    df_breakout = df_breakout[df_breakout['Breakout'] == True]
+    df_breakout = df_breakout[['Date','Open','Close','Volume','Breakout']].copy()
     sentiment = run_sentiment_analysis(ticker, df_breakout)
     return render_template('engine.html', graph=f'images/{ticker}.png', ticker=ticker, company_info=info,
                            column_names=df_breakout.columns.values, row_data=list(df_breakout.values.tolist()), zip=zip, tables = [sentiment.to_html(classes='data', header="true")])
 
-@app.route("/price/<ticker>")
-def price_prediction(ticker):
+@app.route("/prediction/<ticker>")
+def prediction(ticker):
     info = get_company_info(ticker)
     df_breakout = get_breakout_data(ticker)
-    sentiment = get_sentiment(ticker)
+    price = run_price_prediction(ticker, df_breakout)
+    df_breakout = df_breakout[df_breakout['Breakout'] == True]
+    df_breakout = df_breakout[['Date','Open','Close','Volume','Breakout']].copy()
     return render_template('engine.html', graph=f'images/{ticker}.png', ticker=ticker, company_info=info,
                            column_names=df_breakout.columns.values, row_data=list(df_breakout.values.tolist()), zip=zip, tables = [sentiment.to_html(classes='data', header="true")])
 

@@ -1,26 +1,43 @@
-import joblib
 import pandas as pd
-from sklearn.preprocessing import StandardScaler
+from sklearn.cluster import KMeans
+import matplotlib.pyplot as plt
+import joblib
 
-def run_price_prediction(ticker):
-    df_breakout = pd.read_csv(f'./data/breakout/{ticker}.csv')
-    loaded_model = joblib.load(f'./models/{ticker}.joblib')
+def run_price_prediction(ticker, df_breakout):
+    existing_model = joblib.load(f'./models/{ticker}_breakout.joblib')
+    
+    # Needs to be the same parameters that are used during breakout training otherwise it will fail.
+    breakout_features = df_breakout[['Open_Close','MA20','OC-%-MA20','MaxOC_Prev10','MA20_Volume','Volume-%-MA20_Volume']]
+    
+    predictions = existing_model.predict(breakout_features)
 
-    # Loop breakout data for each breakout date 
-    for row in df_breakout.iterrows():
-        features_for_prediction = df_breakout[['Short_MA', 'Long_MA', 'MACD', 'Signal_Line']].values
-        # Make a price prediction
-        prediction = loaded_model.predict(features_for_prediction)[0]
+    clustering_features = df_breakout[['Open_Close','Volume']]
 
-    # Display the result
-    print(f"For the breakout date {breakout_date}, the model predicts {'Increase' if prediction else 'No Increase'} in stock price.")
+    # Use K-Means to cluster historical price movements
+    num_clusters = 3  # You can adjust this based on your dataset and preferences
+    kmeans = KMeans(n_clusters=num_clusters, random_state=42)
+    
+    kmeans_clusters = kmeans.fit_predict(clustering_features)
+
+    breakout_cluster =kmeans.predict(clustering_features)
+
+    similar_periods = df_breakout[kmeans_clusters == breakout_cluster[0]]
 
 
-""" 
-#new_data = yf.download(symbol, start="2022-01-01", end="2022-02-01")
-new_features = pd.DataFrame(new_data['Close'])
-new_features_scaled = scaler.transform(new_features)
+    """ plt.scatter(df_breakout['Date'], df_breakout['Open_Close'], c=breakout_cluster, cmap='viridis')
+    plt.xlabel('Date')
+    plt.ylabel('Daily Returns')
+    plt.title('K-Means Clustering of Daily Returns')
+    plt.savefig(f'./static/images/{ticker}_price.png')
+    #plt.show()
+    plt.close() """
+        
+    
 
-# Use the trained model to predict the percentage change
-predicted_percentage_change = model.predict(new_features_scaled)
-print(f'Predicted Percentage Change: {predicted_percentage_change}') """
+    # Find historical periods with a similar cluster
+    
+    # Calculate the average future price movement for the identified cluster
+    #average_future_price_movement = similar_periods['FuturePrice'].mean()
+
+    #print(f'Predicted Average Future Price Movement: {average_future_price_movement}')
+
