@@ -92,12 +92,12 @@
       </h2>
       <div id="collapseThree" class="{{menu3}}" data-bs-parent="#accordionExample">
         <div class="accordion-body">
-          <div class="container text-center">
+          <div class="container text-left">
             <div class="row">
-              <div class="col-3">
+              <div class="col-5">
                 - Please be aware that the sentiment analysis can take a while
               </div>
-              <div class="col-9"></div>
+              <div class="col-7"></div>
             </div>
             <div class="row">
               <div class="col-12">
@@ -127,7 +127,17 @@
         </h2>
         <div id="collapseFour" class="{{menu4}}" data-bs-parent="#accordionExample">
           <div class="accordion-body">
-            
+            <div class="container text-left">
+              <div class="row">
+                <div class="col-12">
+                  The model predicts that a future breakout will generate a price increase of {{ prediction }}
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12">
+                  <img src="{{ url_for('static', filename=prediction_img)}}" width="500px" height="400px" alt="prediction">
+                </div>
+              </div>
           </div>
         </div>
       </div>

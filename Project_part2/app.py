@@ -13,13 +13,6 @@ from services.plot_service import plot_graph
 
 app = Flask(__name__)
 
-""" display = [{'menu1':'accordion-collapse collapse show', 'hide':'accordion-collapse collapse'}},
-           {'menu2':{'show':'accordion-collapse collapse show', 'hide':'accordion-collapse collapse'}},
-           {'menu3':{'show':'accordion-collapse collapse show', 'hide':'accordion-collapse collapse'}},
-           {'menu4':{'show':'accordion-collapse collapse show', 'hide':'accordion-collapse collapse'}}
-           
-           ] """
-
 if __name__ == '__main__':
     app.run(debug=True) 
 
@@ -72,11 +65,13 @@ def sentiment(ticker):
 def prediction(ticker):
     info = get_company_info(ticker)
     df_breakout = get_breakout_data(ticker)
-    price = run_price_prediction(ticker, df_breakout)
+    prediction = run_price_prediction(ticker, df_breakout)
     df_breakout = df_breakout[df_breakout['Breakout'] == True]
     df_breakout = df_breakout[['Date','Open','Close','Volume','Breakout']].copy()
+    sentiment = get_sentiment(ticker)
     return render_template('engine.html', graph=f'images/{ticker}.png', ticker=ticker, company_info=info,accuracy=get_accuracy(ticker),
                            column_names=df_breakout.columns.values, row_data=list(df_breakout.values.tolist()), zip=zip, tables = [sentiment.to_html(classes='data', header="true", index = False)],
+                           prediction=prediction, prediction_img=f'images/{ticker}_predictions.png',
                            menu1='accordion-collapse collapse', menu2='accordion-collapse collapse', menu3='accordion-collapse collapse show', menu4='accordion-collapse collapse show')
 
 
@@ -84,17 +79,5 @@ def prediction(ticker):
 def engine():
     return render_template('engine.html')
 
-""" if ticker in ['TSLA','MSFT','AAPL','META']:
-    print(f'Webscarping via Yahoo finance started for {ticker}')
-    scrape_status = scrape_stock_prices(ticker)
-    print(scrape_status['Message'])
-    if scrape_status['Status'] == True:
-        print('Retriving historical breakout patterns')
-        #run_breakout(ticker)
-        print('How is the sentiment leading up to the breakout')
-        print('Display dates of potential break outs - apply machine learning, does it become a breakout or not when we have identified it?')
-        print('Run sentiment analysis (only supported for Tesla at the moment(historicaly)) Take sentiment of the consolidation period')
-    else:
-        print('Please try another ticker.') """
 
     
