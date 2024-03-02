@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request
 import pandas as pd
 from services.data_collector_service import scrape_stock_prices, get_company_info
-from ml.breakout import run_breakout, get_breakout_data
+from ml.breakout import run_breakout, get_breakout_data, get_accuracy
 from ml.sentiment_analyser import run_sentiment_analysis, get_sentiment
 from ml.price_prediction import run_price_prediction
 from services.plot_service import plot_graph
@@ -12,6 +12,13 @@ from services.plot_service import plot_graph
 # Having the flow more visualised in an ui adds to the understanding. 
 
 app = Flask(__name__)
+
+""" display = [{'menu1':'accordion-collapse collapse show', 'hide':'accordion-collapse collapse'}},
+           {'menu2':{'show':'accordion-collapse collapse show', 'hide':'accordion-collapse collapse'}},
+           {'menu3':{'show':'accordion-collapse collapse show', 'hide':'accordion-collapse collapse'}},
+           {'menu4':{'show':'accordion-collapse collapse show', 'hide':'accordion-collapse collapse'}}
+           
+           ] """
 
 if __name__ == '__main__':
     app.run(debug=True) 
@@ -29,11 +36,12 @@ def index():
 def analyze():
     if request.method == 'POST':
         ticker = request.form['tickers']
-            
-        #Maybe generate a dictionary with different statuses
         scrape_result = scrape_stock_prices(ticker)
-        plot_graph(scrape_result['Data'], ticker)
-        return render_template('engine.html', graph=f'images/{ticker}.png', ticker=ticker, company_info=scrape_result['Info'])
+        if scrape_result['Status'] == True:
+            plot_graph(scrape_result['Data'], ticker)
+            return render_template('engine.html', graph=f'images/{ticker}.png', ticker=ticker, company_info=scrape_result['Info'], 
+               menu1='accordion-collapse collapse show', menu2='accordion-collapse collapse', menu3='accordion-collapse collapse', menu4='accordion-collapse collapse')
+        
     else:
         return render_template('engine.html')
 
@@ -45,7 +53,8 @@ def breakout(ticker):
     df_breakout = df_breakout[['Date','Open','Close','Volume','Breakout']].copy()
     info = get_company_info(ticker)
     return render_template('engine.html', graph=f'images/{ticker}.png', ticker=ticker, company_info=info, accuracy=breakout_data['Accuracy'], 
-                           column_names=df_breakout.columns.values, row_data=list(df_breakout.values.tolist()), zip=zip)
+                           column_names=df_breakout.columns.values, row_data=list(df_breakout.values.tolist()), zip=zip,
+                           menu1='accordion-collapse collapse show', menu2='accordion-collapse collapse show', menu3='accordion-collapse collapse', menu4='accordion-collapse collapse')
 
 @app.route("/sentiment/<ticker>")
 def sentiment(ticker):
@@ -54,8 +63,10 @@ def sentiment(ticker):
     df_breakout = df_breakout[df_breakout['Breakout'] == True]
     df_breakout = df_breakout[['Date','Open','Close','Volume','Breakout']].copy()
     sentiment = run_sentiment_analysis(ticker, df_breakout)
-    return render_template('engine.html', graph=f'images/{ticker}.png', ticker=ticker, company_info=info,
-                           column_names=df_breakout.columns.values, row_data=list(df_breakout.values.tolist()), zip=zip, tables = [sentiment.to_html(classes='data', header="true")])
+    return render_template('engine.html', graph=f'images/{ticker}.png', ticker=ticker, company_info=info, accuracy=get_accuracy(ticker),
+                           column_names=df_breakout.columns.values, row_data=list(df_breakout.values.tolist()), zip=zip, tables = [sentiment.to_html(classes='data', header="true", index = False)],
+                           menu1='accordion-collapse collapse', menu2='accordion-collapse collapse show', menu3='accordion-collapse collapse show', menu4='accordion-collapse collapse')
+                           
 
 @app.route("/prediction/<ticker>")
 def prediction(ticker):
@@ -64,8 +75,9 @@ def prediction(ticker):
     price = run_price_prediction(ticker, df_breakout)
     df_breakout = df_breakout[df_breakout['Breakout'] == True]
     df_breakout = df_breakout[['Date','Open','Close','Volume','Breakout']].copy()
-    return render_template('engine.html', graph=f'images/{ticker}.png', ticker=ticker, company_info=info,
-                           column_names=df_breakout.columns.values, row_data=list(df_breakout.values.tolist()), zip=zip, tables = [sentiment.to_html(classes='data', header="true")])
+    return render_template('engine.html', graph=f'images/{ticker}.png', ticker=ticker, company_info=info,accuracy=get_accuracy(ticker),
+                           column_names=df_breakout.columns.values, row_data=list(df_breakout.values.tolist()), zip=zip, tables = [sentiment.to_html(classes='data', header="true", index = False)],
+                           menu1='accordion-collapse collapse', menu2='accordion-collapse collapse', menu3='accordion-collapse collapse show', menu4='accordion-collapse collapse show')
 
 
 @app.route("/engine")

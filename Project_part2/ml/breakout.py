@@ -63,13 +63,20 @@ def run_breakout(ticker):
     
     # The model seems to be overfitting, the accuracy is to high
     if accuracy > 0.75:
-        # Saving the model, so that going foward it can be feed 
+        # Saving the model, so that going foward it might be utilized in price prediction (This is not the case right now) 
         joblib.dump(trained_model, f'./models/{ticker}_breakout.joblib')
+        f = open(f'./models/{ticker}_breakout_accuracy.txt', "w")
+        f.write(str(accuracy * 100))
+        f.close()
 
     return {'Accuracy':accuracy * 100,'Data':df_breakout }
 
 def get_breakout_data(ticker):
     df_breakout = pd.read_csv(f'./data/breakout/{ticker}.csv')
     return df_breakout 
+
+def get_accuracy(ticker):
+    f = open(f'./models/{ticker}_breakout_accuracy.txt', "r")
+    return f.read()
 
 #run_breakout('TSLA')
